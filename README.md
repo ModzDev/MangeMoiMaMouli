@@ -7,6 +7,10 @@
 
 ## Install
 
+```bash
+gem install colorize
+```
+
 ## Usage
 
 ## Author
