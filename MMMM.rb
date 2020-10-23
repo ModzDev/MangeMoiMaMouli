@@ -9,6 +9,7 @@ puts "\n\n"
 
 def main
     searchFiles()
+    puts "\n\n---------[".colorize(:light_black) + " 🛠️  Checking Coding Style Errors 🛠️  ".colorize(:yellow) + "]---------\n".colorize(:light_black)
     verifyFileName()
 end
 
@@ -18,7 +19,8 @@ def searchFiles
     sourcesFiles = Dir.glob("**/*.c")
     headerFiles = Dir.glob("**/*.h")
     makefile = Dir.glob("**/Makefile")
-    forbiddenFiles = Dir.glob("**/*.{o,sh}")
+    forbiddenFiles = Dir.glob("**/*.{o,gch,a,so,d}")
+    tempFiles = Dir.glob("**/*{~,#}")
 
     # Verify if files exists
     if sourcesFiles.any? || headerFiles.any? || makefile.any?
@@ -34,7 +36,10 @@ def searchFiles
             puts "Makefile found: ".colorize(:light_green) + file
         end
         for file in forbiddenFiles
-            puts "Probably forbidden file found: ".colorize(:light_red) + file
+            puts "🤬 [O2] Probably forbidden file found: ".colorize(:light_red) + file
+        end
+        for file in tempFiles
+            puts "🤬 [O2] Probably temporary file found: ".colorize(:light_red) + file
         end
     else
         puts "\n"
@@ -43,25 +48,28 @@ def searchFiles
 end
 
 def verifyFileName()
-    puts "\n"
-    puts "---------[".colorize(:light_black) + " 🛠️  Verify Files Names 🛠️  ".colorize(:yellow) + "]---------".colorize(:light_black)
-    puts "\n"
-
     # Get files in subdir
     sourcesFiles = Dir.glob("**/*.c")
     headerFiles = Dir.glob("**/*.h")
+    errors = 0
 
     for file in sourcesFiles do
         filename = File.basename(file)
         if !filename.match("^([a-z]*_*)*\.c$")
-            puts "[O4] File Name Error: ".colorize(:red) + file.colorize(:blue) + " must follow the snake_case convention.".colorize(:white)
+            puts "🤬 [O4] File Name Error: ".colorize(:red) + file.colorize(:blue) + " must follow the snake_case convention.".colorize(:white)
+            errors = 1
         end
     end
     for file in headerFiles do
         filename = File.basename(file)
         if !filename.match("^([a-z]*_*)*\.h$")
-            puts "[O4] File Name Error: ".colorize(:red) + file.colorize(:blue) + " must follow the snake_case convention.".colorize(:white)
+            puts "🤬 [O4] File Name Error: ".colorize(:red) + file.colorize(:blue) + " must follow the snake_case convention.".colorize(:white)
+            errors = 1
         end
+    end
+
+    if errors == 0
+        puts "                No errors found".colorize(:green)
     end
 end
 
